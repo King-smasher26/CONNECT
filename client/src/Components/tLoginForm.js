@@ -41,7 +41,7 @@ function Login() {
       <Header />
       <div className="card">
         <form className="form-container" onSubmit={handleSubmit}>
-          <h1 className="form-title">Student Login</h1>
+          <h1 className="form-title">Teacher Login</h1>
           <label className="form-input-label">
             Email:
             <input
