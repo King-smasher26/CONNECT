@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 function Login() {
     const navigate =useNavigate();
-
+    const [loginQuestion,setLoginQuestion] = useState('teacher')
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -23,14 +23,28 @@ function Login() {
         const data = {
             email,password
         }
-        axios.defaults.withCredentials = true;
-      axios.post('http://localhost:5000/loginStudent',data).then((res)=>{
+        if(loginQuestion=="student"){
+            axios.defaults.withCredentials = true;
+          axios.post('http://localhost:5000/loginStudent',data).then((res)=>{
+    
+            console.log('request sent successfully')
+            console.log('Form submitted:', { email, password });
+            console.log(res)
+            navigate('/dashboard');
+          }).catch((err)=>console.log(err))
 
-        console.log('request sent successfully')
-        console.log('Form submitted:', { email, password });
-        console.log(res)
-        navigate('/dashboard');
-      }).catch((err)=>console.log(err))
+        }
+        if(loginQuestion=="teacher"){
+            axios.defaults.withCredentials = true;
+          axios.post('http://localhost:5000/loginMentor',data).then((res)=>{
+    
+            console.log('request sent successfully')
+            console.log('Form submitted:', { email, password });
+            console.log(res)
+            navigate('/Mentordashboard');
+          }).catch((err)=>console.log(err))
+
+        }
     };
 
     return (
@@ -49,7 +63,11 @@ function Login() {
                         <input className='form-input' type="password" value={password} onChange={handlePasswordChange} />
                     </label>
                     <br />
-                    <button className='form-button' type='submit'>Login</button>
+                    <div className="buttons-login">
+
+                    <button className='form-button' type='submit' onClick={()=>setLoginQuestion("student")}>Login As Student</button>
+                    <button className='form-button' type='submit' onClick={()=>setLoginQuestion("teacher")}>Login As Mentor</button>
+                    </div>
                 </form>
             </div>
             <Footer />

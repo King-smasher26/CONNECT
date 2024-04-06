@@ -7,8 +7,11 @@ import Contact from './Pages/contact';
 import SForm from './Components/studentForm';
 import TForm from './Components/teacherForm';
 import Login from './Components/loginForm';
-import Dashboard from './Pages/dashboard';
+// import Dashboard from './Pages/dashboard';
 import Videocall from './Pages/videocall';
+import Mentorvideocall from './Pages/mentorvideocall';
+import Mentordashboard from './Pages/mentordashboard';
+import StudentDashboard from './Pages/dashboard';
 function App() {
   return (
     
@@ -19,8 +22,10 @@ function App() {
     <Route path="/sform" element={<SForm />} />
     <Route path="/tform" element={<TForm />} />
     <Route path="/login" element={<Login />} />
-    <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/dashboard" element={<StudentDashboard />} />
     <Route path="/caller" element={<Videocall/>} />
+    <Route path="/callerMentor" element={<Mentorvideocall/>} />
+    <Route path="/Mentordashboard" element={<Mentordashboard/>} />
     </Routes>
     
   );

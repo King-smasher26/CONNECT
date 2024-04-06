@@ -113,6 +113,17 @@
     }
 
 }
+.buttons-login{
+    display: flex;
+    /* border: 2px solid black; */
+    width: 30vw;
+    align-items: center;
+    justify-content: center;
+    
+}
+.buttons-login button{
+    margin-right: .4rem;
+}
 
 @media screen and (max-width: 480px) {
     .form-container {

@@ -1,6 +1,7 @@
 const jsonwebtoken = require("jsonwebtoken");
 require('dotenv').config();
 const Student = require('./model/Student')
+const Mentor = require('./model/Mentor')
 const createTokens = (Student)=>{
     const accessToken = jsonwebtoken.sign({
         email:Student.email,
@@ -10,6 +11,31 @@ const createTokens = (Student)=>{
     );
 
     return accessToken;
+}
+
+// io token to db
+
+const tokentoDB=(req,res,next)=>{
+    const ioToken = req.cookies["io"];
+    // console.log(ioToken)
+    if(!ioToken){
+
+        return res.status(400).json({error:"io token not found"});
+    }
+    else{
+        try{
+            
+            req.ioToken=ioToken;
+            console.log(ioToken)
+            return next();
+        }
+        catch{
+            if(!accessToken) return res.status(400).json({error:"token error"});
+
+        }
+    }
+
+
 }
 
 // middleware function that runs before any request
@@ -31,7 +57,7 @@ const validateTokenStudent =async (req,res,next)=>{
             req.token=accessToken;
             return next();
         }
-        res.send('heelo')
+        res.send('hello')
     }catch(err){
         res.status(400).json({error:err.message})
     }
@@ -61,4 +87,4 @@ const validateTokenMentor =async (req,res,next)=>{
     return next();
 }
 
-module.exports = {createTokens,validateTokenStudent,validateTokenMentor}
+module.exports = {createTokens,validateTokenStudent,validateTokenMentor,tokentoDB}

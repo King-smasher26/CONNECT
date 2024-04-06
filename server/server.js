@@ -2,10 +2,11 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors= require('cors')
 const cookieParser = require("cookie-parser")
-const {createTokens,validateTokenStudent,validateTokenMentor} = require('./JWT')
+const {createTokens,validateTokenStudent,validateTokenMentor,tokentoDB} = require('./JWT')
 const bcrypt = require('bcryptjs')
 const Student = require('./model/Student');
 const Mentor = require('./model/Mentor');
+const teacherSocket = require('./model/TeacherSocket')
 require("dotenv").config();
 const Database = process.env.DB;
 mongoose.connect(Database).then(()=>{
@@ -28,11 +29,9 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
 	socket.emit("me", socket.id)
-
 	socket.on("disconnect", () => {
 		socket.broadcast.emit("callEnded")
 	})
-
 	socket.on("callUser", (data) => {
 		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
 	})
@@ -40,6 +39,17 @@ io.on("connection", (socket) => {
 	socket.on("answerCall", (data) => {
 		io.to(data.to).emit("callAccepted", data.signal)
 	})
+})
+app.post('/mentorAvailable',validateTokenMentor,(req,res)=>{
+    if(!req.teacher){
+        res.status(400).json('token cannot be verified')
+    }
+    else{
+        const mentorEmail = req.body.teacherEmail;
+        console.log(mentorEmail)
+        // console.log(req.student._id);
+        res.status(200).json("hello")
+    }
 })
 
 app.get('/',async (req,res)=>{
@@ -168,9 +178,23 @@ app.get('/profileStudent',validateTokenStudent,(req,res)=>{
 app.get('/profileMentor',validateTokenMentor,(req,res)=>{
     res.json(req.Mentor);
 })
-app.post('/getMentor',validateTokenStudent,(req,res)=>{
+app.post('/getMentor',validateTokenStudent,async (req,res)=>{
     const subject = req.body.subject;
-    res.json(subject)
+    console.log(subject)
+    if(!subject){
+        res.status(400).send("enter subject value")
+    }
+    else{
+
+        Mentor.find({subjects:{$all : 'OOPS'}})
+        const person =await Mentor.find({subjects:subject})
+        const mentorarray = person.map((obj)=>{
+            console.log(obj.email)
+            return [obj.email,obj.callingId]
+        })
+        res.json(mentorarray)
+        console.log(person)
+    }
 })
 server.listen(5000,()=>{
     console.log('server is working')
