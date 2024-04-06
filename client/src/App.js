@@ -8,7 +8,7 @@ import SForm from './Components/studentForm';
 import TForm from './Components/teacherForm';
 import Login from './Components/loginForm';
 import Dashboard from './Pages/dashboard';
-
+import Videocall from './Pages/videocall';
 function App() {
   return (
     
@@ -20,6 +20,7 @@ function App() {
     <Route path="/tform" element={<TForm />} />
     <Route path="/login" element={<Login />} />
     <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/caller" element={<Videocall/>} />
     </Routes>
     
   );

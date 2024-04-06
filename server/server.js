@@ -4,7 +4,6 @@ const cors= require('cors')
 const cookieParser = require("cookie-parser")
 const {createTokens,validateTokenStudent,validateTokenMentor} = require('./JWT')
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
 const Student = require('./model/Student');
 const Mentor = require('./model/Mentor');
 require("dotenv").config();
@@ -18,20 +17,31 @@ const app = express();
 app.use(express.json());
 app.use(cors({credentials:true,origin:'http://localhost:3000'}));
 app.use(cookieParser());
-// async function addMentor(){
-//     try{
-//         const anime = new imginfo({email:"mentor1@gmail.com",password:,options:[
+const http = require("http")
+const server = http.createServer(app)
+const io = require("socket.io")(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: [ "GET", "POST" ]
+    }
+})
 
-//             "Bakemonogatri ","One piece","No Game No Life","Cyberpunk: Edgerunners"
-//         ]
-//         })
-//         console.log('anime added')
-//         await anime.save();
-//         console.log(anime)
-//     }catch(e){
-//         console.log(e)
-//     }
-// }
+io.on("connection", (socket) => {
+	socket.emit("me", socket.id)
+
+	socket.on("disconnect", () => {
+		socket.broadcast.emit("callEnded")
+	})
+
+	socket.on("callUser", (data) => {
+		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+	})
+
+	socket.on("answerCall", (data) => {
+		io.to(data.to).emit("callAccepted", data.signal)
+	})
+})
+
 app.get('/',async (req,res)=>{
     try{
         const animeimgs=await imginfo.find({})
@@ -162,6 +172,6 @@ app.post('/getMentor',validateTokenStudent,(req,res)=>{
     const subject = req.body.subject;
     res.json(subject)
 })
-app.listen(5000,()=>{
+server.listen(5000,()=>{
     console.log('server is working')
 })
