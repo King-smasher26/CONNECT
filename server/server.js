@@ -19,6 +19,7 @@ app.use(express.json());
 app.use(cors({credentials:true,origin:'http://localhost:3000'}));
 app.use(cookieParser());
 const http = require("http")
+const TeacherSocket = require('./model/TeacherSocket')
 const server = http.createServer(app)
 const io = require("socket.io")(server, {
     cors: {
@@ -41,14 +42,17 @@ io.on("connection", (socket) => {
 	})
 })
 app.post('/mentorAvailable',validateTokenMentor,(req,res)=>{
-    if(!req.teacher){
+    if(!req.Mentor){
         res.status(400).json('token cannot be verified')
     }
     else{
-        const mentorEmail = req.body.teacherEmail;
-        console.log(mentorEmail)
-        // console.log(req.student._id);
-        res.status(200).json("hello")
+        const ioToken = req.body.ioToken;
+        console.log('token and email are',req.body.ioToken,req.Mentor.email)
+        tokentoDB(ioToken,req.Mentor.email);
+        // const mentorEmail = req.body.teacherEmail;
+        
+        // console.log(mentorEmail)
+        // res.status(200).json("Status online")
     }
 })
 
@@ -190,7 +194,13 @@ app.post('/getMentor',validateTokenStudent,async (req,res)=>{
         const person =await Mentor.find({subjects:subject})
         const mentorarray = person.map((obj)=>{
             console.log(obj.email)
-            return [obj.email,obj.callingId]
+            if(obj.available==true){
+                const teacherSocket=TeacherSocket.findOne({email:obj.email})
+                if(teacherSocket){
+
+                    return [obj.email,teacherSocket.socketID]
+                }
+            }
         })
         res.json(mentorarray)
         console.log(person)

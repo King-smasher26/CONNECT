@@ -4,9 +4,10 @@ import { CopyToClipboard } from "react-copy-to-clipboard"
 import Peer from "simple-peer"
 import io from "socket.io-client"
 import axios from "axios"
+import '../style/videocall.css'
 const socket = io.connect('http://localhost:5000')
 
-function Mentorvideocall(){
+function Videocall(){
 	
 	const [ me, setMe ] = useState("")
 	const [ stream, setStream ] = useState()
@@ -22,8 +23,6 @@ function Mentorvideocall(){
 	const connectionRef= useRef({})
 	
 	axios.defaults.withCredentials = true;
-
-	const [userAvailable] = 
     useEffect(() => {
 		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
 			setStream(stream)
@@ -34,8 +33,8 @@ function Mentorvideocall(){
 			setMe(id)
 			console.log("id generated :",id)
 			const data={
-				teacherEmail:"trialteacher123@gmail.com",
-				available:true
+				available:true,
+				ioToken:id
 			}
 			axios.post('http://localhost:5000/mentorAvailable',data).then((res)=>{
 			  console.log(res)
@@ -161,10 +160,9 @@ function Mentorvideocall(){
 				) : null}
 			</div>
 		</div>
-        {/* <button onClick={availableFunction}>I'm available</button> */}
         
     </div>
   )
 }
 
-export default Mentorvideocall
+export default Videocall

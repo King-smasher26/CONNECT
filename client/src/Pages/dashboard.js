@@ -11,7 +11,7 @@ function StudentDashboard() {
     branch:null
   });
   const [availableMentors, setAvailableMentors] = useState([]);
-  const [seachMentors,setSearchMentors]=useState(false)
+  const [searchMentors,setSearchMentors]=useState(false)
   // const [conversationHistory, setConversationHistory] = useState([]);
   useEffect(()=>{
     axios.defaults.withCredentials = true;
@@ -19,7 +19,6 @@ function StudentDashboard() {
           setStudent({
             email:res.data.email,
             branch:res.data.branch
-
           })
           console.log(res.data)
         }).catch(err=>console.log(err))
@@ -108,7 +107,7 @@ function StudentDashboard() {
           </div>
         )}
         {
-          seachMentors?availableMentors.map((obj)=>{
+          searchMentors?availableMentors.map((obj)=>{
             return(
               <div className='conversation-history'>
               <tr>

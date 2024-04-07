@@ -2,6 +2,7 @@ const jsonwebtoken = require("jsonwebtoken");
 require('dotenv').config();
 const Student = require('./model/Student')
 const Mentor = require('./model/Mentor')
+const TeacherSocket = require('./model/TeacherSocket')
 const createTokens = (Student)=>{
     const accessToken = jsonwebtoken.sign({
         email:Student.email,
@@ -15,22 +16,36 @@ const createTokens = (Student)=>{
 
 // io token to db
 
-const tokentoDB=(req,res,next)=>{
-    const ioToken = req.cookies["io"];
-    // console.log(ioToken)
+const tokentoDB=async (ioToken,email)=>{
+    // const ioToken = req.body.ioToken;
+    // console.log(req.body.ioToken)
     if(!ioToken){
 
         return res.status(400).json({error:"io token not found"});
     }
     else{
         try{
-            
-            req.ioToken=ioToken;
+            const mySocket =await TeacherSocket.findOne({email:email})
+            console.log('mysocket is',mySocket)
+            if(!mySocket){
+                console.log('entered')
+                TeacherSocket.create({
+                    email:email,
+                    socketID:ioToken
+                }).then(()=>{
+                    res.status(200).send('new token registered')
+                    console.log('new socket added');
+                }).catch(err=>{console.log(err)})
+            }
+            else{
+                TeacherSocket.findOneAndUpdate({email:email},{socketID:ioToken}).then(()=>{
+                    console.log('updated socketID')
+                })
+            }
             console.log(ioToken)
-            return next();
         }
-        catch{
-            if(!accessToken) return res.status(400).json({error:"token error"});
+        catch(err){
+            console.log(err)
 
         }
     }
